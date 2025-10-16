@@ -1,10 +1,14 @@
 package org.sopt;
 
-import org.sopt.controller.MemberController;
-import org.sopt.domain.Member;
-import org.sopt.repository.MemoryMemberRepository;
-import org.sopt.service.MemberServiceImpl;
+import org.sopt.domain.member.controller.MemberController;
+import org.sopt.domain.member.dto.req.CreateMemberReq;
+import org.sopt.domain.member.entity.Gender;
+import org.sopt.domain.member.entity.Member;
+import org.sopt.domain.member.repository.MemoryMemberRepository;
+import org.sopt.domain.member.service.MemberServiceImpl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -24,7 +28,8 @@ public class Main {
             System.out.println("1️⃣. 회원 등록 ➕");
             System.out.println("2️⃣. ID로 회원 조회 🔍");
             System.out.println("3️⃣. 전체 회원 조회 📋");
-            System.out.println("4️⃣. 종료 🚪");
+            System.out.println("4️⃣. 회원 삭제");
+            System.out.println("0. 종료 🚪");
             System.out.println("---------------------------------");
             System.out.print("메뉴를 선택하세요: ");
 
@@ -32,17 +37,45 @@ public class Main {
 
             switch (choice) {
                 case "1":
-                    System.out.print("등록할 회원 이름을 입력하세요: ");
-                    String name = scanner.nextLine();
-                    if (name.trim().isEmpty()) {
-                        System.out.println("⚠️ 이름을 입력해주세요.");
-                        continue;
-                    }
-                    Long createdId = memberController.createMember(name);
-                    if (createdId != null) {
-                        System.out.println("✅ 회원 등록 완료 (ID: " + createdId + ")");
-                    } else {
-                        System.out.println("❌ 회원 등록 실패");
+                    try {
+                        System.out.print("등록할 회원 이름을 입력하세요: ");
+                        String name = scanner.nextLine().trim();
+                        if (name.isEmpty()) {
+                            System.out.println("⚠️ 이름을 입력해주세요.");
+                            break;
+                        }
+
+                        System.out.print("등록할 생년월일(YYYY-MM-DD)을 입력하세요: ");
+                        LocalDate birthday = LocalDate.parse(scanner.nextLine());
+
+                        System.out.print("등록할 이메일을 입력하세요: ");
+                        String email = scanner.nextLine().trim();
+                        if (email.isEmpty()) {
+                            System.out.println("⚠️ 이메일을 입력해주세요.");
+                            break;
+                        }
+
+                        System.out.print("등록할 성별(MALE/FEMALE)을 입력하세요: ");
+                        Gender gender = Gender.valueOf(scanner.nextLine().trim().toUpperCase());
+
+                        // ✅ CreateMemberReq DTO 생성
+                        CreateMemberReq createMemberReq = new CreateMemberReq(name, birthday, email, gender);
+
+                        // ✅ Controller 호출
+                        Long createdId = memberController.createMember(createMemberReq);
+
+                        if (createdId != null) {
+                            System.out.println("✅ 회원 등록 완료 (ID: " + createdId + ")");
+                        } else {
+                            System.out.println("❌ 회원 등록 실패");
+                        }
+
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("❌ 성별은 MALE 또는 FEMALE만 입력 가능합니다.");
+                    } catch (DateTimeParseException e) {
+                        System.out.println("❌ 생년월일 형식이 잘못되었습니다. (예: 2000-01-01)");
+                    } catch (Exception e) {
+                        System.out.println("❌ 등록 중 오류가 발생했습니다: " + e.getMessage());
                     }
                     break;
                 case "2":
@@ -73,6 +106,20 @@ public class Main {
                     }
                     break;
                 case "4":
+                    System.out.print("삭제할 회원 ID를 입력하세요: ");
+                    try {
+                        Long id = Long.parseLong(scanner.nextLine());
+                        boolean deleted = memberController.deleteMemberById(id);
+                        if (deleted) {
+                            System.out.println("🗑️ 회원이 성공적으로 삭제되었습니다. (ID=" + id + ")");
+                        } else {
+                            System.out.println("⚠️ 해당 ID의 회원을 찾을 수 없습니다.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ 유효하지 않은 ID 형식입니다. 숫자를 입력해주세요.");
+                    }
+                    break;
+                case "0":
                     System.out.println("👋 서비스를 종료합니다. 안녕히 계세요!");
                     scanner.close();
                     return;
