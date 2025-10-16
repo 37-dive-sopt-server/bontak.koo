@@ -4,8 +4,9 @@ import org.sopt.domain.member.controller.MemberController;
 import org.sopt.domain.member.dto.req.CreateMemberReq;
 import org.sopt.domain.member.entity.Gender;
 import org.sopt.domain.member.entity.Member;
-import org.sopt.domain.member.repository.MemoryMemberRepository;
+import org.sopt.domain.member.repository.FileMemberRepositoryImpl;
 import org.sopt.domain.member.service.MemberServiceImpl;
+import org.sopt.global.init.DataInitializer;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -16,9 +17,12 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        MemoryMemberRepository memberRepository = new MemoryMemberRepository();
+        FileMemberRepositoryImpl memberRepository = new FileMemberRepositoryImpl();
         MemberServiceImpl memberService = new MemberServiceImpl();
         MemberController memberController = new MemberController();
+
+        DataInitializer initializer = new DataInitializer(memberRepository);
+        initializer.initializeSequence();
 
         Scanner scanner = new Scanner(System.in);
 
