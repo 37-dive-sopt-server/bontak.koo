@@ -2,7 +2,9 @@ package org.sopt.global.api;
 
 public enum ErrorCode {
 
-    DUPLICATE_EMAIL("400", "이미 존재하는 이메일입니다.");
+    DUPLICATE_EMAIL("40001", "이미 존재하는 이메일입니다."),
+    MEMBER_UNDERAGE("40002", "20세 미만 회원은 가입할 수 없습니다.");
+
 
     private final String code;
     private final String message;
