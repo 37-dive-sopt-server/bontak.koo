@@ -1,14 +1,14 @@
 package org.sopt.domain.member.validator;
 
-import org.sopt.domain.member.repository.MemoryMemberRepository;
+import org.sopt.domain.member.repository.FileMemberRepositoryImpl;
 import org.sopt.global.api.ErrorCode;
 import org.sopt.global.api.handler.MemberException;
 
 public class EmailValidator {
-    private final MemoryMemberRepository memberRepository;
+    private final FileMemberRepositoryImpl memberRepository;
 
     // serviceImpl의 저장소를 주입받아 사용
-    public EmailValidator(MemoryMemberRepository memberRepository) {
+    public EmailValidator(FileMemberRepositoryImpl memberRepository) {
         this.memberRepository = memberRepository;
     }
 
