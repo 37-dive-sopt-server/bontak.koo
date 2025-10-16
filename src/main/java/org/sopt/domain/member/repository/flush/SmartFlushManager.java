@@ -8,7 +8,7 @@ public class SmartFlushManager {
 
     // 별도의 백그라운드 스레드 생성
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final Runnable flushTask;
+    private Runnable flushTask;
     private final long intervalSeconds;
 
     // 데이터 변경 여부 추적
@@ -17,9 +17,12 @@ public class SmartFlushManager {
     // false: 해시맵과 파일의 데이터가 다름
     private volatile boolean isDirty = false;
 
-    public SmartFlushManager(Runnable flushTask, long intervalSeconds) {
-        this.flushTask = flushTask;
+    public SmartFlushManager(long intervalSeconds) {
         this.intervalSeconds = intervalSeconds;
+    }
+
+    public void setFlushTask(Runnable flushTask) {
+        this.flushTask = flushTask;
         startScheduler();
     }
 

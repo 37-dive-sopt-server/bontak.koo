@@ -1,8 +1,8 @@
 package org.sopt.domain.member.service;
 
-import org.sopt.domain.member.entity.Member;
 import org.sopt.domain.member.dto.req.CreateMemberReq;
-import org.sopt.domain.member.repository.FileMemberRepositoryImpl;
+import org.sopt.domain.member.entity.Member;
+import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.domain.member.validator.AgeValidator;
 import org.sopt.domain.member.validator.EmailValidator;
 import org.sopt.global.util.SequenceGenerator;
@@ -12,12 +12,17 @@ import java.util.Optional;
 
 public class MemberServiceImpl implements MemberService {
 
-    private final FileMemberRepositoryImpl memberRepository = new FileMemberRepositoryImpl();
+    private final MemberRepository memberRepository;
+    private final EmailValidator emailValidator;
+    private final AgeValidator ageValidator;
 
-    // 저장소 주입
-    private final EmailValidator emailValidator = new EmailValidator(memberRepository);
 
-    private final AgeValidator ageValidator = new AgeValidator();
+    public MemberServiceImpl(MemberRepository memberRepository, EmailValidator emailValidator, AgeValidator ageValidator) {
+        this.memberRepository = memberRepository;
+        this.emailValidator = emailValidator;
+        this.ageValidator = ageValidator;
+    }
+
 
     @Override
     public Long join(CreateMemberReq createMemberReq) {

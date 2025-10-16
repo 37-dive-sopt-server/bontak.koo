@@ -1,16 +1,19 @@
 package org.sopt.domain.member.controller;
 
-import org.sopt.domain.member.entity.Member;
 import org.sopt.domain.member.dto.req.CreateMemberReq;
+import org.sopt.domain.member.entity.Member;
 import org.sopt.domain.member.service.MemberService;
-import org.sopt.domain.member.service.MemberServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
 
 public class MemberController {
 
-    private final MemberService memberService = new MemberServiceImpl();
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     public Long createMember(CreateMemberReq createMemberReq) {
 

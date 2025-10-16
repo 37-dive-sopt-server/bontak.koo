@@ -12,14 +12,11 @@ public class FileMemberRepositoryImpl implements MemberRepository {
     private final FileStorage fileStorage;
     private final SmartFlushManager flushManager;
 
-    private static final long FLUSH_INTERVAL_SECONDS = 10;
-
     // 기존 데이터 로드
-    public FileMemberRepositoryImpl() {
-        this.fileStorage = new FileStorage("./members.txt");
-
-        // SmartFlushManager에게 flush 동작(=saveToFile)을 전달
-        this.flushManager = new SmartFlushManager(this::saveToFile, FLUSH_INTERVAL_SECONDS);
+    public FileMemberRepositoryImpl(FileStorage fileStorage, SmartFlushManager flushManager) {
+        this.fileStorage = fileStorage;
+        this.flushManager = flushManager;
+        this.flushManager.setFlushTask(this::saveToFile);
         loadFromFile();
     }
 

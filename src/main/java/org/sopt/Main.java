@@ -4,8 +4,8 @@ import org.sopt.domain.member.controller.MemberController;
 import org.sopt.domain.member.dto.req.CreateMemberReq;
 import org.sopt.domain.member.entity.Gender;
 import org.sopt.domain.member.entity.Member;
-import org.sopt.domain.member.repository.FileMemberRepositoryImpl;
-import org.sopt.domain.member.service.MemberServiceImpl;
+import org.sopt.domain.member.repository.MemberRepository;
+import org.sopt.global.config.AppConfig;
 import org.sopt.global.init.DataInitializer;
 
 import java.time.LocalDate;
@@ -17,9 +17,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        FileMemberRepositoryImpl memberRepository = new FileMemberRepositoryImpl();
-        MemberServiceImpl memberService = new MemberServiceImpl();
-        MemberController memberController = new MemberController();
+        AppConfig config = new AppConfig();
+
+        MemberController memberController = config.memberController();
+        MemberRepository memberRepository = config.memberRepository();
 
         DataInitializer initializer = new DataInitializer(memberRepository);
         initializer.initializeSequence();
