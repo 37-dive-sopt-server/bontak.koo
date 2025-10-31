@@ -1,12 +1,17 @@
 package org.sopt.domain.member.controller;
 
 import org.sopt.domain.member.dto.req.CreateMemberReq;
-import org.sopt.domain.member.entity.Member;
+import org.sopt.domain.member.dto.res.AllMembersRes;
+import org.sopt.domain.member.dto.res.MemberIdRes;
+import org.sopt.domain.member.dto.res.MemberRes;
 import org.sopt.domain.member.service.MemberService;
+import org.sopt.global.api.ApiResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
+@Controller
+@RequestMapping("/users")
 public class MemberController {
 
     private final MemberService memberService;
@@ -15,19 +20,27 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    public Long createMember(CreateMemberReq createMemberReq) {
-
-        return memberService.join(createMemberReq);
+    @PostMapping
+    public ResponseEntity<ApiResponse<MemberIdRes>> createMember(@RequestBody CreateMemberReq createMemberReq) {
+        MemberIdRes response = memberService.join(createMemberReq);
+        return ResponseEntity.ok(ApiResponse.created(response));
     }
 
-    public Optional<Member> findMemberById(Long id) {
-        return memberService.findOne(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<MemberRes>> findMemberById(@PathVariable("userId") Long id) {
+        MemberRes response = memberService.findOne(id);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    public List<Member> getAllMembers() {
-        return memberService.findAllMembers();
+    @GetMapping
+    public ResponseEntity<ApiResponse<AllMembersRes>> getAllMembers() {
+        AllMembersRes response = memberService.findAllMembers();
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    public boolean deleteMemberById(Long id) {
-        return memberService.deleteMember(id);
-    }}
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse<MemberIdRes>> deleteMemberById(@PathVariable("userId") Long id) {
+        MemberIdRes response = memberService.deleteMember(id);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+}

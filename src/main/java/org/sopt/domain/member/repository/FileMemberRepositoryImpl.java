@@ -3,43 +3,44 @@ package org.sopt.domain.member.repository;
 import org.sopt.domain.member.entity.Member;
 import org.sopt.domain.member.repository.flush.SmartFlushManager;
 import org.sopt.domain.member.repository.storage.FileStorage;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
 public class FileMemberRepositoryImpl implements MemberRepository {
 
     private final Map<Long, Member> store = new HashMap<>();
     private final FileStorage fileStorage;
     private final SmartFlushManager flushManager;
 
-    // 기존 데이터 로드
     public FileMemberRepositoryImpl(FileStorage fileStorage, SmartFlushManager flushManager) {
         this.fileStorage = fileStorage;
         this.flushManager = flushManager;
+
+        // SmartFlushManager가 flush 시 실행할 작업 지정
         this.flushManager.setFlushTask(this::saveToFile);
+
+        // 애플리케이션 시작 시 파일 로드
         loadFromFile();
     }
-
 
     @Override
     public Member save(Member member) {
         store.put(member.getId(), member);
-        flushManager.markDirty(); // dirty로 표시
+        flushManager.markDirty(); // dirty 플래그 설정 (비동기 flush 대상)
         return member;
     }
-
 
     @Override
     public Optional<Member> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }
 
-
     @Override
     public List<Member> findAll() {
         return new ArrayList<>(store.values());
     }
-
 
     @Override
     public Optional<Member> findByEmail(String email) {
@@ -47,7 +48,6 @@ public class FileMemberRepositoryImpl implements MemberRepository {
                 .filter(member -> member.getEmail().equals(email))
                 .findFirst();
     }
-
 
     @Override
     public boolean deleteById(Long id) {
@@ -59,16 +59,10 @@ public class FileMemberRepositoryImpl implements MemberRepository {
         return false;
     }
 
-    // 파일로 데이터 저장
-    // dirty일때만 파일에 저장
-    // 하나의 스레드만 플러시할 수 있습니다
     private synchronized void saveToFile() {
         fileStorage.write(store);
     }
 
-
-    // 파일에서 데이터 로드
-    // 안전하지 않은 형변환 컴파일러 경고를 무시합니다
     @SuppressWarnings("unchecked")
     private void loadFromFile() {
         Object obj = fileStorage.read();
