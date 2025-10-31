@@ -11,6 +11,11 @@ public enum ErrorCode {
 
 
     /**
+     * 404 NOT FOUND
+     */
+    MEMBER_NOT_FOUND("404", "지원하지 않는 URL입니다."),
+
+    /**
      * 500 INTERNAL SERVER ERROR
      * */
     // 파일 입출력 관련 예외
