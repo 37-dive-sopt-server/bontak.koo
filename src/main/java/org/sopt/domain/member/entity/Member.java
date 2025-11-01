@@ -1,8 +1,11 @@
 package org.sopt.domain.member.entity;
 
+import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
+@Component
 public class Member implements Serializable {
 
     private Long id;
@@ -33,21 +36,15 @@ public class Member implements Serializable {
         return birthday;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public Gender getGender() {
         return gender;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public static Member of(Long id, String name, LocalDate birthday, String email, Gender gender) {
-        Member member = new Member();
-        member.id = id;
-        member.name = name;
-        member.birthday = birthday;
-        member.email = email;
-        member.gender = gender;
-        return member;
+        return new Member(id, name, birthday, email, gender);
     }
 }

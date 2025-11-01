@@ -1,18 +1,17 @@
 package org.sopt.domain.member.service;
 
-import org.sopt.domain.member.entity.Member;
+import org.sopt.domain.member.dto.res.MemberIdRes;
+import org.sopt.domain.member.dto.res.MemberRes;
+import org.sopt.domain.member.dto.res.AllMembersRes;
 import org.sopt.domain.member.dto.req.CreateMemberReq;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface MemberService {
 
-    Long join(CreateMemberReq createMemberReq);
+    MemberIdRes join(CreateMemberReq createMemberReq);
 
-    Optional<Member> findOne(Long memberId);
+    MemberRes findOne(Long memberId);
 
-    List<Member> findAllMembers();
+    AllMembersRes findAllMembers();
 
-    boolean deleteMember(Long id);
+    MemberIdRes deleteMember(Long id);
 }

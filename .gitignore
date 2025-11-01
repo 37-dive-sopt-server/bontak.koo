@@ -43,3 +43,6 @@ bin/
 
 ### date file ###
 members.txt
+
+### yml ###
+application.yml

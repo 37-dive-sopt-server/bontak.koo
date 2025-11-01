@@ -1,38 +1,35 @@
 package org.sopt.domain.member.repository.flush;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class SmartFlushManager {
 
-    // 별도의 백그라운드 스레드 생성
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private Runnable flushTask;
-    private final long intervalSeconds;
 
-    // 데이터 변경 여부 추적
-    // volatile: 항상 메인 메모리에 반영하여, 가시성을 해결합니다
-    // true: 해시맵과 파일의 데이터가 같음
-    // false: 해시맵과 파일의 데이터가 다름
+    private static final long INTERVAL_SECONDS = 10;
     private volatile boolean isDirty = false;
-
-    public SmartFlushManager(long intervalSeconds) {
-        this.intervalSeconds = intervalSeconds;
-    }
 
     public void setFlushTask(Runnable flushTask) {
         this.flushTask = flushTask;
         startScheduler();
     }
 
+    @PostConstruct
     private void startScheduler() {
         scheduler.scheduleAtFixedRate(() -> {
-            if (isDirty) {
+            if (isDirty && flushTask != null) {
                 flushTask.run();
                 isDirty = false;
             }
-        }, intervalSeconds, intervalSeconds, TimeUnit.SECONDS);
+        }, INTERVAL_SECONDS, INTERVAL_SECONDS, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::flushOnExit));
     }
@@ -41,9 +38,9 @@ public class SmartFlushManager {
         isDirty = true;
     }
 
-    // 프로그램 종료 시점 강제 Flush
+    @PreDestroy
     private void flushOnExit() {
-        if (isDirty) {
+        if (isDirty && flushTask != null) {
             flushTask.run();
         }
         scheduler.shutdown();
