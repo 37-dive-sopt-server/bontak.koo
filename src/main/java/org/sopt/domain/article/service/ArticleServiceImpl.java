@@ -20,7 +20,6 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
@@ -28,16 +27,13 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional
     public void createArticle(Long userId, CreateArticleReq req) {
-        log.info("게시글 생성 요청 - 사용자 ID: {}, 제목: {}", userId, req.title());
 
         if (articleRepository.existsByTitle(req.title())) {
-            log.warn("중복된 제목으로 게시글 생성 시도됨: {}", req.title());
             throw new ArticleException(ErrorCode.DUPLICATE_ARTICLE_TITLE);
         }
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.error("게시글 생성 실패 - 존재하지 않는 회원 ID: {}", userId);
                     return new MemberException(ErrorCode.MEMBER_NOT_FOUND);
                 });
 
@@ -49,7 +45,6 @@ public class ArticleServiceImpl implements ArticleService {
         );
 
         articleRepository.save(article);
-        log.info("게시글 저장 완료 - 게시글 제목: {}, 작성자: {}", article.getTitle(), member.getName());
     }
 
     @Override
