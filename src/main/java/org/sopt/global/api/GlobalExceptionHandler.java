@@ -10,6 +10,14 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(GeneralException.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeneralException(GeneralException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        ApiResponse<Void> response = ApiResponse.fail(errorCode.getCode(), errorCode.getMsg());
+
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
      // 존재하지 않는 URL 요청 → 404 Not Found
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotFound(NoHandlerFoundException e) {

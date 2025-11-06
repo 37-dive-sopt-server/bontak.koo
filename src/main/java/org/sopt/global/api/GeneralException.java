@@ -1,20 +1,13 @@
 package org.sopt.global.api;
 
-public class GeneralException extends RuntimeException {
+import lombok.Getter;
 
+@Getter
+public class GeneralException extends RuntimeException {  // 예외클래스 상속의 중간층
   private final ErrorCode errorCode;
 
   public GeneralException(ErrorCode errorCode) {
-    super(errorCode.getMessage());
+    super(errorCode.getMsg());
     this.errorCode = errorCode;
-  }
-
-  public GeneralException(ErrorCode errorCode, String detail) {
-    super(errorCode.getMessage() + " (" + detail + ")");
-    this.errorCode = errorCode;
-  }
-
-  public ErrorCode getErrorCode() {
-    return errorCode;
   }
 }
