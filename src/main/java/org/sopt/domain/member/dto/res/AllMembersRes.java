@@ -9,7 +9,7 @@ public record AllMembersRes(List<MemberRes> members) {
     public static AllMembersRes from(List<Member> memberList) {
         List<MemberRes> memberDtos = memberList.stream()
                 .map(MemberRes::from)
-                .collect(Collectors.toList());
+                .toList();
 
         return new AllMembersRes(memberDtos);
     }
