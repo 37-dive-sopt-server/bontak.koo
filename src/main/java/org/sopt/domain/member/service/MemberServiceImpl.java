@@ -1,44 +1,38 @@
 package org.sopt.domain.member.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.sopt.domain.member.dto.req.CreateMemberReq;
+import org.sopt.domain.member.dto.res.AllMembersRes;
 import org.sopt.domain.member.dto.res.MemberIdRes;
 import org.sopt.domain.member.dto.res.MemberRes;
-import org.sopt.domain.member.dto.res.AllMembersRes;
 import org.sopt.domain.member.entity.Member;
 import org.sopt.domain.member.repository.MemberRepository;
-import org.sopt.domain.member.validator.UserValidator;
+import org.sopt.domain.member.validator.MemberValidator;
 import org.sopt.global.api.ErrorCode;
 import org.sopt.global.api.handler.MemberException;
-import org.sopt.global.util.SequenceGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
-    private final UserValidator userValidator;
-
-    public MemberServiceImpl(MemberRepository memberRepository, UserValidator userValidator) {
-        this.memberRepository = memberRepository;
-        this.userValidator = userValidator;
-    }
+    private final MemberValidator memberValidator;
 
     @Override
+    @Transactional
     public MemberIdRes join(CreateMemberReq createMemberReq) {
 
-        userValidator.validateAge(createMemberReq.birthday());
-        userValidator.validateDuplicateEmail(createMemberReq.email());
+        if (memberRepository.existsByEmailAndIsDeletedFalse(createMemberReq.email())) {
+            throw new MemberException(ErrorCode.DUPLICATE_EMAIL);
+        }
 
-        Long id = SequenceGenerator.nextId();
-        Member member = Member.of(
-                id,
-                createMemberReq.name(),
-                createMemberReq.birthday(),
-                createMemberReq.email(),
-                createMemberReq.gender()
-        );
+        Member member = memberValidator.createValidatedMember(createMemberReq);
 
         memberRepository.save(member);
 
@@ -60,11 +54,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberIdRes deleteMember(Long id) {
-        boolean deleted = memberRepository.deleteById(id);
-        if (!deleted) {
-            throw new MemberException(ErrorCode.MEMBER_NOT_FOUND);
-        }
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+
+        memberRepository.delete(member);
+
         return MemberIdRes.from(id);
     }
 }

@@ -9,7 +9,4 @@ public class MemberException extends GeneralException {
         super(errorCode);
     }
 
-    public MemberException(ErrorCode errorCode, String detail) {
-        super(errorCode, detail);
-    }
 }
