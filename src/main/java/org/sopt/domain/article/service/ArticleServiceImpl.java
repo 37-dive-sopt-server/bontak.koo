@@ -7,6 +7,9 @@ import org.sopt.domain.article.dto.res.AllArticleRes;
 import org.sopt.domain.article.dto.res.ArticleRes;
 import org.sopt.domain.article.entity.Article;
 import org.sopt.domain.article.repository.ArticleRepository;
+import org.sopt.domain.comment.dto.res.CommentResponse;
+import org.sopt.domain.comment.entity.Comment;
+import org.sopt.domain.comment.repository.CommentRepository;
 import org.sopt.domain.member.entity.Member;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.global.api.ErrorCode;
@@ -23,6 +26,8 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
+
 
     @Override
     @Transactional
@@ -49,9 +54,24 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleRes getArticle(Long articleId) {
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        return ArticleRes.from(article);
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
+
+        List<Comment> comments = commentRepository
+                .findByArticleIdAndIsDeletedFalseOrderByCreatedAtAsc(articleId);
+
+        List<CommentResponse> commentResponses = comments.stream()
+                .map(c -> new CommentResponse(
+                        c.getId(),
+                        c.getMember().getId(),
+                        c.getMember().getName(),
+                        c.getContent(),
+                        c.getCreatedAt()
+                ))
+                .toList();
+
+        return ArticleRes.from(article, commentResponses);
     }
 
     @Override
