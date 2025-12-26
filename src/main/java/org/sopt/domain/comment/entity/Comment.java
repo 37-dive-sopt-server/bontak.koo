@@ -38,8 +38,7 @@ public class Comment extends BaseEntity {
     public static Comment create(
             Member member,
             Article article,
-            String content,
-            Comment parentComment
+            String content
     ) {
         return Comment.builder()
                 .member(member)
