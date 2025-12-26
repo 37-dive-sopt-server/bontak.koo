@@ -1,13 +1,17 @@
 package org.sopt.domain.comment.service;
 
-import org.sopt.domain.comment.dto.req.CreateArticleReq;
-import org.sopt.domain.comment.dto.res.AllArticleRes;
-import org.sopt.domain.comment.dto.res.ArticleRes;
+import org.sopt.domain.comment.dto.req.CommentCreateRequest;
+import org.sopt.domain.comment.dto.req.CommentUpdateRequest;
+import org.sopt.domain.comment.dto.res.CommentResponse;
+
+import java.util.List;
 
 public interface CommentService {
-    void createArticle(Long userId, CreateArticleReq req);
+    void create(Long memberId, CommentCreateRequest request);
 
-    ArticleRes getArticle(Long articleId);
+    List<CommentResponse> findByArticle(Long articleId);
 
-    AllArticleRes getAllArticle();
+    void update(Long memberId, Long commentId, CommentUpdateRequest request);
+
+    void delete(Long memberId, Long commentId);
 }

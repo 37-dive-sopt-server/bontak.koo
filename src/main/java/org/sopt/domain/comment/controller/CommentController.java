@@ -2,6 +2,7 @@ package org.sopt.domain.comment.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.comment.dto.req.CommentCreateRequest;
 import org.sopt.domain.comment.dto.req.CommentUpdateRequest;
@@ -28,7 +29,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
-            @RequestBody CommentCreateRequest request
+            @Valid @RequestBody CommentCreateRequest request
     ) {
         Long memberId = extractMemberId(authorization);
         commentService.create(memberId, request);
@@ -50,7 +51,7 @@ public class CommentController {
     public ResponseEntity<ApiResponse<Void>> update(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
             @PathVariable Long commentId,
-            @RequestBody CommentUpdateRequest request
+            @Valid @RequestBody CommentUpdateRequest request
     ) {
         Long memberId = extractMemberId(authorization);
         commentService.update(memberId, commentId, request);
