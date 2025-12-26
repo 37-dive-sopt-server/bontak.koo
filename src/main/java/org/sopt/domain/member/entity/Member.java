@@ -33,6 +33,7 @@ public class Member{
     private String name;
     private LocalDate birthday;
     private String email;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -41,20 +42,23 @@ public class Member{
     @JsonIgnore
     private boolean isDeleted = Boolean.FALSE;
 
-    public Member(Long id, String name, LocalDate birthday, String email, Gender gender) {
+    public Member(Long id, String name, LocalDate birthday, String email, Gender gender, String password) {
         this.id = id;
         this.name = name;
         this.birthday = birthday;
         this.email = email;
         this.gender = gender;
+        this.password = password;
+
     }
 
-    public static Member of(String name, LocalDate birthday, String email, Gender gender) {
+    public static Member of(String name, LocalDate birthday, String email, Gender gender, String password) {
         return Member.builder()
                 .name(name)
                 .birthday(birthday)
                 .email(email)
                 .gender(gender)
+                .password(password)
                 .build();
     }
 }
