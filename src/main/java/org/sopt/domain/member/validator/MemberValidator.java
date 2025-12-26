@@ -19,7 +19,8 @@ public class MemberValidator {
                 req.name(),
                 req.birthday(),
                 req.email(),
-                req.gender()
+                req.gender(),
+                req.password()
         );
     }
 

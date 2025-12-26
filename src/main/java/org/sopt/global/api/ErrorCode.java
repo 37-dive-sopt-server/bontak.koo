@@ -19,6 +19,13 @@ public enum ErrorCode {
 
 
     /**
+     * 401 UNAUTHORIZED
+     */
+    // 댓글 관련
+    UNAUTHORIZED_COMMENT(HttpStatus.UNAUTHORIZED, 401, "댓글 수정 권한이 없습니다."),
+
+
+    /**
      * 404 NOT FOUND
      */
     // 멤버 관련
@@ -26,6 +33,9 @@ public enum ErrorCode {
 
     // 아티클 관련
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "아티클을 찾을 수 없습니다."),
+
+    // 댓글 관련
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "댓글을 찾을 수 없습니다."),
 
     /**
      * 500 INTERNAL SERVER ERROR
